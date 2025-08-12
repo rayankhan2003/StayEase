@@ -1,17 +1,17 @@
 // components/home/CallToAction.tsx
-import Image from "next/image";
-import Link from "next/link";
-import { Button } from "@/components/ui/button";
+import Image from 'next/image';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
 
 export function CallToAction() {
   return (
     <section className="py-16 relative">
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=2070&auto=format&fit=crop"
+          src="https://images.squarespace-cdn.com/content/v1/52c9f4ebe4b02c7007cdd86a/cf073961-ee2c-4683-8ac3-241455d7f598/CASA+CUIXMALA_8.jpg"
           alt="Luxury Hotel View"
           fill
-          className="object-cover"
+          className="object-cover [object-position:50%_30%]"
         />
         <div className="absolute inset-0 bg-black/70" />
       </div>

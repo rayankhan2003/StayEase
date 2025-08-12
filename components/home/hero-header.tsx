@@ -26,7 +26,7 @@ export function HeroHeader() {
       {/* Header Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">Made In Heaven</h1>
+          <h1 className="text-2xl font-bold text-white">StayEase</h1>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
