@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 import { supabase } from "@/lib/supabase-server";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
