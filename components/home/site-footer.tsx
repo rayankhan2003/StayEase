@@ -45,7 +45,7 @@ export function SiteFooter() {
           <ul className="mt-4 space-y-2 text-sm text-gray-400">
             <li className="flex items-center">
               <MapPin className="mr-2 h-4 w-4" />
-              123 Luxury Avenue, New York, NY 10001
+              Saddar, Peshawar, PES 25000
             </li>
             <li className="flex items-center">
               <svg
@@ -57,7 +57,7 @@ export function SiteFooter() {
               >
                 <path d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
-              +1 (555) 123-4567
+              +92 (340) 095-8353
             </li>
             <li className="flex items-center">
               <svg
@@ -69,7 +69,7 @@ export function SiteFooter() {
               >
                 <path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
               </svg>
-              info@luxehaven.com
+              info@galahotel.com
             </li>
           </ul>
         </div>
@@ -95,7 +95,7 @@ export function SiteFooter() {
       </div>
       <div className="mt-12 border-t border-[#333] pt-8 text-center">
         <p className="text-sm text-gray-400">
-          © {new Date().getFullYear()} Luxe Haven. All rights reserved.
+          © {new Date().getFullYear()} Gala Hotel. All rights reserved.
         </p>
       </div>
     </footer>

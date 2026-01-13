@@ -1,20 +1,20 @@
-import type React from 'react';
-import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
-import { ReactQueryProvider } from '@/lib/react-query';
-import { AuthProvider } from '@/components/auth-provider';
-import { Toaster } from '@/components/ui/toaster';
-import { AuthGate } from '@/components/auth-gate';
-import { Suspense } from 'react'; //
+import type React from "react";
+import type { Metadata } from "next";
+import { Inter } from "next/font/google";
+import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
+import { ReactQueryProvider } from "@/lib/react-query";
+import { AuthProvider } from "@/components/auth-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { AuthGate } from "@/components/auth-gate";
+import { Suspense } from "react"; //
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'StayEase - Creating Luxury Stays',
+  title: "Gala Hotel Peshawar",
   description:
-    'We are luxury hospitality experts creating memorable stays since 2010',
+    "We are luxury hospitality experts creating memorable stays since 2010",
 };
 
 export default function RootLayout({

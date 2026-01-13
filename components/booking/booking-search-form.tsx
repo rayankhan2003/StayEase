@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 type BookingSearchFormProps = {
   defaultValues?: {
@@ -183,6 +184,7 @@ export function BookingSearchForm({ defaultValues }: BookingSearchFormProps) {
         <Button
           className="w-full bg-primary hover:bg-primary/90 text-white"
           onClick={handleSearch}
+          disabled={!checkIn || !checkOut}
         >
           Search
         </Button>

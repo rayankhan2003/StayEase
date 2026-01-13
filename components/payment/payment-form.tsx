@@ -82,7 +82,7 @@ export function PaymentForm({
             Processing...
           </>
         ) : (
-          `Pay $${totalAmount.toFixed(2)}`
+          `Pay PKR ${totalAmount.toLocaleString()}`
         )}
       </Button>
     </div>

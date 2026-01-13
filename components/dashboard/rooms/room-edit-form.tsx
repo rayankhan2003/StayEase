@@ -5,6 +5,8 @@ import * as z from "zod";
 import { useBranches } from "@/hooks/use-branches";
 import { useUpdateRoom } from "@/hooks/use-rooms";
 import { Button } from "@/components/ui/button";
+import { uploadRoomImage } from "@/lib/api/upload-room-image";
+import { useState } from "react";
 import {
   Form,
   FormControl,
@@ -76,6 +78,10 @@ interface RoomEditFormProps {
 
 export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
   const { data: branches = [], isLoading: isLoadingBranches } = useBranches();
+
+  // ✅ multiple files
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
+
   const updateRoom = useUpdateRoom();
 
   const form = useForm<RoomFormValues>({
@@ -93,6 +99,22 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
 
   async function onSubmit(data: RoomFormValues) {
     try {
+      // ✅ if null, fallback to []
+      let imageUrls: string[] = room.image_urls ?? [];
+
+      // ✅ upload all selected images and append
+      if (imageFiles.length > 0) {
+        console.log("🟡 Uploading new room images...");
+
+        const uploadedUrls: string[] = [];
+        for (const file of imageFiles) {
+          const url = await uploadRoomImage(file, room.id);
+          uploadedUrls.push(url);
+        }
+
+        imageUrls = [...imageUrls, ...uploadedUrls];
+      }
+
       await updateRoom.mutateAsync({
         id: room.id,
         room: {
@@ -103,6 +125,7 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
           status: data.status,
           max_guests: data.max_guests,
           amenities: data.amenities,
+          image_urls: imageUrls,
         },
       });
 
@@ -173,6 +196,7 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
             )}
           />
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -205,6 +229,7 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
               </FormItem>
             )}
           />
+
           <FormField
             control={form.control}
             name="status"
@@ -234,6 +259,7 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
             )}
           />
         </div>
+
         <div className="grid grid-cols-2 gap-4">
           <FormField
             control={form.control}
@@ -245,12 +271,12 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
                   <Input
                     type="number"
                     min={0}
-                    step={0.01}
-                    placeholder="99.99"
+                    step={1000}
+                    placeholder="15000"
                     {...field}
                   />
                 </FormControl>
-                <FormDescription>The price per night in USD.</FormDescription>
+                <FormDescription>The price per night in PKR</FormDescription>
                 <FormMessage />
               </FormItem>
             )}
@@ -272,6 +298,7 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
             )}
           />
         </div>
+
         <FormField
           control={form.control}
           name="amenities"
@@ -322,6 +349,40 @@ export function RoomEditForm({ room, onSuccess }: RoomEditFormProps) {
             </FormItem>
           )}
         />
+
+        {/* ✅ UPDATED: MULTIPLE IMAGES INPUT */}
+        <FormItem>
+          <FormLabel>Room Images</FormLabel>
+          <FormDescription>
+            Upload one or more images (they will be added).
+          </FormDescription>
+          <FormControl>
+            <Input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => {
+                const newFiles = Array.from(e.target.files ?? []);
+                setImageFiles((prev) => [...prev, ...newFiles]);
+              }}
+            />
+          </FormControl>
+
+          {room.image_urls?.length ? (
+            <p className="text-sm text-muted-foreground">
+              Current images: {room.image_urls.length}
+            </p>
+          ) : (
+            <p className="text-sm text-muted-foreground">No images set yet.</p>
+          )}
+
+          {imageFiles.length > 0 && (
+            <p className="text-sm text-green-500">
+              Selected: {imageFiles.length} image(s)
+            </p>
+          )}
+        </FormItem>
+
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onSuccess}>
             Cancel

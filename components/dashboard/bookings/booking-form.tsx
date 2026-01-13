@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -58,9 +58,12 @@ export function BookingForm({
   setOpen: (val: boolean) => void;
 }) {
   const { data: guests = [] } = useGuests();
-  const { data: rooms = [] } = useRooms();
+  const { data: roomsData } = useRooms();
   const { data: branches = [] } = useBranches();
   const createBooking = useCreateBooking();
+
+  // ✅ ALWAYS normalize rooms to array
+  const rooms = Array.isArray(roomsData) ? roomsData : [];
 
   const form = useForm<BookingFormValues>({
     resolver: zodResolver(bookingSchema),
@@ -75,36 +78,43 @@ export function BookingForm({
       total_amount: 0,
     },
   });
+
   const selectedRoom = rooms.find((r) => r.id === form.watch("room_id"));
+
   useEffect(() => {
-    if (selectedRoom) {
-      console.log(selectedRoom.branch_id);
-      form.setValue("branch_id", selectedRoom.branch_id);
-      form.setValue("total_amount", selectedRoom.price); // Assuming `price` exists
-    }
-  }, [selectedRoom]);
+    if (!selectedRoom) return;
+
+    form.setValue("branch_id", selectedRoom.branch_id);
+    form.setValue("total_amount", Number(selectedRoom.price));
+  }, [selectedRoom, form]);
 
   const onSubmit = async (data: BookingFormValues) => {
     try {
-      console.log("hello");
       const bookingData = {
         ...data,
         check_in: formatISO(new Date(data.check_in)),
         check_out: formatISO(new Date(data.check_out)),
-        payment_method: "cash", // hardcoded for admin panel
+        payment_method: "cash", // admin-only
       };
 
       const booking = await createBooking.mutateAsync(bookingData as any);
+
       toast({
         title: "Booking created",
         description: `Booking ID: ${booking.id}`,
       });
+
       setOpen(false);
     } catch (error) {
       console.error(error);
-      toast({ title: "Error", description: "Failed to create booking" });
+      toast({
+        title: "Error",
+        description: "Failed to create booking",
+        variant: "destructive",
+      });
     }
   };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
@@ -122,10 +132,7 @@ export function BookingForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Guest</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select guest" />
@@ -151,10 +158,7 @@ export function BookingForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Room</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Select room" />
@@ -163,7 +167,7 @@ export function BookingForm({
                     <SelectContent>
                       {rooms.map((r) => (
                         <SelectItem key={r.id} value={r.id}>
-                          {r.number}
+                          Room {r.number}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -172,20 +176,18 @@ export function BookingForm({
                 </FormItem>
               )}
             />
-            {/* Booking Status */}
+
+            {/* Status */}
             <FormField
               control={form.control}
               name="status"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select status" />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -195,24 +197,21 @@ export function BookingForm({
                       <SelectItem value="cancelled">Cancelled</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Payment Status */}
+
+            {/* Payment */}
             <FormField
               control={form.control}
               name="payment_status"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Payment Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select payment status" />
+                        <SelectValue />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
@@ -220,11 +219,11 @@ export function BookingForm({
                       <SelectItem value="pending">Pending</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Total Amount */}
+
+            {/* Total */}
             <FormField
               control={form.control}
               name="total_amount"
@@ -234,10 +233,10 @@ export function BookingForm({
                   <FormControl>
                     <Input type="number" readOnly {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+
             {/* Branch */}
             <FormField
               control={form.control}
@@ -245,17 +244,10 @@ export function BookingForm({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Branch</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    value={field.value} // important: use controlled value
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue
-                          placeholder="Select branch"
-                          // show branch name instead of just ID
-                          defaultValue={field.value}
-                        >
+                        <SelectValue>
                           {branches.find((b) => b.id === field.value)?.name ??
                             "Select branch"}
                         </SelectValue>
@@ -269,11 +261,11 @@ export function BookingForm({
                       ))}
                     </SelectContent>
                   </Select>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Check-in */}
+
+            {/* Dates */}
             <FormField
               control={form.control}
               name="check_in"
@@ -283,11 +275,10 @@ export function BookingForm({
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {/* Check-out */}
+
             <FormField
               control={form.control}
               name="check_out"
@@ -297,10 +288,10 @@ export function BookingForm({
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
+
             <DialogFooter>
               <Button type="submit">Create Booking</Button>
             </DialogFooter>

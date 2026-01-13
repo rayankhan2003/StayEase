@@ -31,7 +31,9 @@ export default function DashboardLayout({
             <span className="sr-only">Toggle Menu</span>
           </Button>
           <div className="flex-1">
-            <h1 className="text-xl font-semibold">Hotel Management System</h1>
+            <h1 className="text-xl font-semibold">
+              Gala Hotel Management System
+            </h1>
           </div>
           <div className="flex items-center gap-2">
             <ModeToggle />

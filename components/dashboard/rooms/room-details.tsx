@@ -49,7 +49,7 @@ export function RoomDetails({ room, onEdit, onClose }: RoomDetailsProps) {
               <p>
                 {new Intl.NumberFormat("en-US", {
                   style: "currency",
-                  currency: "USD",
+                  currency: "PKR",
                 }).format(Number(room.price))}
               </p>
             </div>

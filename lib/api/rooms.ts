@@ -13,12 +13,17 @@ export async function getRooms(
     branchId?: string;
     roomType?: string;
     guests?: string;
-  },
+  },  
+  page = 1,
+  pageSize = 8
 ) {
-  try {
+  try { 
+    const from = (page - 1) * pageSize;
+    const to = from + pageSize - 1;
     let query = supabase
       .from("rooms")
-      .select("* , branches:branch_id (id, name)");
+      .select("* , branches:branch_id (id, name)", { count: "exact" })
+       .range(from, to);
 
     if (filters?.filterStatus) {
       query = query.eq("status", filters?.filterStatus);
@@ -44,10 +49,10 @@ export async function getRooms(
     if (branchId) {
       query = query.eq("branch_id", branchId);
     }
-    const { data, error } = await query.order("number");
+    const { data, error , count } = await query.order("number");
 
     if (error) throw new Error(`Error fetching rooms: ${error.message}`);
-    return data;
+    return {data , count };
   } catch (err) {
     console.error("Exception in getRooms:", err);
     throw err;

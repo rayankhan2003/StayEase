@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
 
 export function HeroHeader() {
   const [isMobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -26,11 +26,11 @@ export function HeroHeader() {
       {/* Header Content */}
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-20 items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">StayEase</h1>
+          <h1 className="text-2xl font-bold text-white">Gala Hotel</h1>
 
           {/* Desktop Nav */}
           <nav className="hidden md:flex items-center space-x-8">
-            {['Rooms', 'Amenities', 'Testimonials', 'Contact'].map((item) => (
+            {["Rooms", "Amenities", "Testimonials", "Contact"].map((item) => (
               <Link
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -96,7 +96,7 @@ export function HeroHeader() {
       {/* Mobile Menu Overlay */}
       {isMobileMenuOpen && (
         <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center space-y-6 text-white px-4">
-          {['Rooms', 'Amenities', 'Testimonials', 'Contact'].map((item) => (
+          {["Rooms", "Amenities", "Testimonials", "Contact"].map((item) => (
             <Link
               key={item}
               href={`#${item.toLowerCase()}`}

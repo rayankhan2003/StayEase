@@ -32,7 +32,7 @@ export function GuestDetails({
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "PKR",
     }).format(amount);
 
   return (

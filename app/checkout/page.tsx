@@ -8,6 +8,8 @@ import { Loader2 } from "lucide-react";
 import { useCreateBooking } from "@/hooks/use-bookings";
 import { supabase } from "@/lib/supabase";
 
+const PKR_SYMBOL = "Rs.";
+
 export default function CheckoutRedirectPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -15,10 +17,11 @@ export default function CheckoutRedirectPage() {
   const createBooking = useCreateBooking();
 
   const [roomData, setRoomData] = useState<{
-    price: number;
+    price: number; // PKR
     number: string;
     branch_id: string;
   } | null>(null);
+
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -31,6 +34,7 @@ export default function CheckoutRedirectPage() {
 
   const checkInDate = checkIn ? new Date(checkIn) : null;
   const checkOutDate = checkOut ? new Date(checkOut) : null;
+
   const nights =
     checkInDate && checkOutDate
       ? Math.max(
@@ -42,7 +46,7 @@ export default function CheckoutRedirectPage() {
         )
       : 1;
 
-  const taxRate = 0.1;
+  const taxRate = 0.1; // 10%
 
   useEffect(() => {
     const fetchRoom = async () => {
@@ -61,7 +65,7 @@ export default function CheckoutRedirectPage() {
         setError("Room not found.");
       } else {
         setRoomData({
-          price: data.price,
+          price: Number(data.price), // PKR
           number: data.number,
           branch_id: data.branch_id,
         });
@@ -79,10 +83,11 @@ export default function CheckoutRedirectPage() {
 
     setIsLoading(true);
 
-    const totalAmount = roomData.price * nights;
-    const tax = totalAmount * taxRate;
-    const grandTotal = totalAmount + tax;
+    const subtotalPKR = roomData.price * nights;
+    const taxPKR = subtotalPKR * taxRate;
+    const totalPKR = subtotalPKR + taxPKR;
 
+    // CASH FLOW (NO STRIPE)
     if (isCash) {
       try {
         const booking = await createBooking.mutateAsync({
@@ -93,7 +98,7 @@ export default function CheckoutRedirectPage() {
           branch_id: roomData.branch_id,
           payment_method: "cash",
           payment_status: "pending",
-          total_amount: grandTotal,
+          total_amount: totalPKR, // PKR stored
           status: "upcoming",
         });
 
@@ -104,7 +109,8 @@ export default function CheckoutRedirectPage() {
       }
       return;
     }
-    console.log("hello");
+
+    // ONLINE (STRIPE)
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
@@ -114,8 +120,7 @@ export default function CheckoutRedirectPage() {
           checkIn,
           checkOut,
           guestDetails: { guestId },
-          nights: nights,
-          totalAmount: grandTotal,
+          nights,
         }),
       });
 
@@ -133,9 +138,9 @@ export default function CheckoutRedirectPage() {
 
   const handleCancel = () => router.back();
 
-  const totalAmount = (roomData?.price ?? 0) * nights;
-  const taxAmount = totalAmount * taxRate;
-  const grandTotal = totalAmount + taxAmount;
+  const subtotalPKR = (roomData?.price ?? 0) * nights;
+  const taxPKR = subtotalPKR * taxRate;
+  const totalPKR = subtotalPKR + taxPKR;
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6">
@@ -152,30 +157,42 @@ export default function CheckoutRedirectPage() {
             <span>Total nights</span>
             <span>{nights}</span>
           </div>
+
           <div className="flex justify-between">
-            <span>Room Price</span>
-            <span>${roomData?.price.toFixed(2)}</span>
+            <span>Room Price (per night)</span>
+            <span>
+              {PKR_SYMBOL} {roomData?.price.toLocaleString()}
+            </span>
           </div>
+
           <div className="flex justify-between">
             <span>Room Price × {nights} night(s)</span>
-            <span>${totalAmount.toFixed(2)}</span>
+            <span>
+              {PKR_SYMBOL} {subtotalPKR.toLocaleString()}
+            </span>
           </div>
+
           <div className="flex justify-between">
             <span>Tax (10%)</span>
-            <span>${taxAmount.toFixed(2)}</span>
+            <span>
+              {PKR_SYMBOL} {taxPKR.toLocaleString()}
+            </span>
           </div>
+
           <div className="flex justify-between font-semibold text-white">
             <span>Total</span>
-            <span>${grandTotal.toFixed(2)}</span>
+            <span>
+              {PKR_SYMBOL} {totalPKR.toLocaleString()}
+            </span>
           </div>
         </div>
 
         <div className="mb-6">
           <h3 className="text-lg font-medium mb-2">Payment Method</h3>
-          <p className="text-sm text-gray-400 mb-4">
+          <p className="text-sm text-gray-400">
             {isCash
-              ? "Payment to be made in person (Cash)"
-              : "Secure payment powered by Stripe"}
+              ? "Payment will be made in person (Cash)"
+              : "Secure online payment via Stripe (charged in USD)"}
           </p>
         </div>
 
@@ -189,12 +206,10 @@ export default function CheckoutRedirectPage() {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {isCash ? "Saving..." : "Redirecting..."}
             </>
+          ) : isCash ? (
+            `Confirm Booking (${PKR_SYMBOL} ${totalPKR.toLocaleString()})`
           ) : (
-            <>
-              {isCash
-                ? `Confirm Booking ($${grandTotal.toFixed(2)})`
-                : `Continue to Payment ($${grandTotal.toFixed(2)})`}
-            </>
+            `Continue to Payment (${PKR_SYMBOL} ${totalPKR.toLocaleString()})`
           )}
         </Button>
 

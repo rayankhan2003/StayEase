@@ -8,7 +8,7 @@ import {
   getRooms,
   updateRoom,
 } from "@/lib/api/rooms";
-import type { RoomInsert, RoomUpdate } from "@/lib/api/rooms";
+import type { Room, RoomInsert, RoomUpdate } from "@/lib/api/rooms";
 import { getRoomsByBranch } from "@/lib/api/bookings";
 import { useAuth } from "@/components/auth-provider";
 
@@ -17,14 +17,22 @@ export function useRooms(filterStatus?: string) {
 
   return useQuery({
     queryKey: ["rooms", { filterStatus, userBranchId }],
-    queryFn: () =>
-      getRooms(
+    queryFn: async () => {
+      const res = await getRooms(
         filterStatus,
-        isEmployee ? userBranchId ?? undefined : undefined,
-      ),
-    enabled: !isEmployee || !!userBranchId, // wait for branchId if employee
+        isEmployee ? userBranchId ?? undefined : undefined
+      );
+
+      // 🔑 normalize response
+      if (Array.isArray(res)) return res;
+      if ("data" in res) return res.data;
+
+      return [];
+    },
+    enabled: !isEmployee || !!userBranchId,
   });
 }
+
 
 export function useRoom(id: string) {
   return useQuery({
@@ -37,8 +45,8 @@ export function useRoom(id: string) {
 export function useCreateRoom() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: (room: RoomInsert) => createRoom(room),
+  return useMutation<Room, Error, RoomInsert>({
+    mutationFn: (room) => createRoom(room),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       queryClient.invalidateQueries({ queryKey: ["branches"] });
@@ -46,18 +54,19 @@ export function useCreateRoom() {
   });
 }
 
+
 export function useUpdateRoom() {
   const queryClient = useQueryClient();
 
-  return useMutation({
-    mutationFn: ({ id, room }: { id: string; room: RoomUpdate }) =>
-      updateRoom(id, room),
+  return useMutation<Room, Error, { id: string; room: RoomUpdate }>({
+    mutationFn: ({ id, room }) => updateRoom(id, room),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["rooms"] });
       queryClient.invalidateQueries({ queryKey: ["rooms", variables.id] });
     },
   });
 }
+
 
 export function useDeleteRoom() {
   const queryClient = useQueryClient();
@@ -85,10 +94,10 @@ export function useFilteredRooms(filters: {
   branchId?: string;
   roomType?: string;
   guests?: string;
-}) {
+} , page : number) {
   return useQuery({
-    queryKey: ["rooms", filters],
-    queryFn: () => getRooms(undefined, undefined, filters),
+    queryKey: ["rooms", filters , page],
+    queryFn: () => getRooms(undefined, undefined, filters , page),
     enabled: true,
   });
 }

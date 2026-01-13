@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { formatISO } from "date-fns";
 import { z } from "zod";
 import { toast } from "sonner";
 
@@ -12,9 +11,11 @@ import { Label } from "@/components/ui/label";
 import { useCreateBooking } from "@/hooks/use-bookings";
 import { findGuestByEmail, GuestInsert } from "@/lib/api/guests";
 import { useCreateGuest } from "@/hooks/use-guests";
-import { Room } from "@/lib/api/rooms";
+import type { Room } from "@/lib/api/rooms";
 
-// Schema validation
+// --------------------
+// Validation schema
+// --------------------
 const guestFormSchema = z.object({
   name: z.string().min(1, "Guest name is required."),
   email: z.string().email("Please enter a valid email."),
@@ -24,6 +25,9 @@ const guestFormSchema = z.object({
   checkOut: z.string().min(1, "Check-out date is required."),
 });
 
+// --------------------
+// Helpers
+// --------------------
 const formatDateForInput = (isoDate: string) => {
   try {
     return new Date(isoDate).toISOString().split("T")[0];
@@ -32,6 +36,16 @@ const formatDateForInput = (isoDate: string) => {
   }
 };
 
+const calculateNights = (checkIn: string, checkOut: string) => {
+  const start = new Date(checkIn);
+  const end = new Date(checkOut);
+  const diff = end.getTime() - start.getTime();
+  return Math.max(1, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+};
+
+// --------------------
+// Props
+// --------------------
 type Props = {
   roomId: string;
   branchId: string;
@@ -51,7 +65,9 @@ export default function BookRoomForm({
   const createBooking = useCreateBooking();
   const createGuest = useCreateGuest();
 
-  // Initial states from URL (converted to YYYY-MM-DD)
+  // --------------------
+  // State
+  // --------------------
   const [localCheckIn, setLocalCheckIn] = useState(
     formatDateForInput(checkIn ?? "")
   );
@@ -62,21 +78,29 @@ export default function BookRoomForm({
   const [guestEmail, setGuestEmail] = useState("");
   const [guestPhone, setGuestPhone] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<"cash" | "online">("cash");
+
+  // --------------------
+  // Submit
+  // --------------------
   const handleSubmit = async () => {
     const validation = guestFormSchema.safeParse({
       name: guestName,
       email: guestEmail,
       phone: guestPhone,
       paymentMethod,
-      totalAmount: room.price,
       checkIn: localCheckIn,
       checkOut: localCheckOut,
     });
+
     if (!validation.success) {
-      console.log("errro", validation.error);
+      toast.error("Please fill all required fields correctly");
+      return;
     }
 
     try {
+      const nights = calculateNights(localCheckIn, localCheckOut);
+      const totalAmount = room.price * nights; // PKR
+
       let guest = await findGuestByEmail(guestEmail);
 
       if (!guest) {
@@ -91,42 +115,48 @@ export default function BookRoomForm({
         };
         guest = await createGuest.mutateAsync(guestData);
       }
+
       if (paymentMethod === "online") {
         const query = new URLSearchParams({
           roomId,
           checkIn: localCheckIn,
           checkOut: localCheckOut,
           guestId: guest.id,
-          totalAmount: room.price.toString(),
-          nights: "1",
+          totalAmount: totalAmount.toString(),
+          nights: nights.toString(),
         }).toString();
 
         toast.success("Redirecting to checkout...");
         router.push(`/checkout?${query}`);
         return;
-      } else {
-        const query = new URLSearchParams({
-          roomId,
-          checkIn: localCheckIn,
-          checkOut: localCheckOut,
-          guestId: guest.id,
-          paymentMethod: "cash",
-        }).toString();
-        router.push(`/checkout?${query}`);
       }
+
+      // Cash booking
+      const query = new URLSearchParams({
+        roomId,
+        checkIn: localCheckIn,
+        checkOut: localCheckOut,
+        guestId: guest.id,
+        paymentMethod: "cash",
+      }).toString();
+
+      router.push(`/checkout?${query}`);
     } catch (err) {
       console.error(err);
       toast.error("Booking failed. Please try again.");
     }
   };
 
+  // --------------------
+  // UI
+  // --------------------
   return (
     <form
       onSubmit={(e) => e.preventDefault()}
       className="space-y-6 bg-neutral-900 p-6 rounded-xl shadow-md"
     >
       <div>
-        <Label className="text-gray-300">Guest Names</Label>
+        <Label className="text-gray-300">Guest Name</Label>
         <Input
           placeholder="John Doe"
           className="bg-neutral-800 text-white border-gray-700"
@@ -188,12 +218,11 @@ export default function BookRoomForm({
               <input
                 type="radio"
                 name="payment"
-                value={method}
                 checked={paymentMethod === method}
                 onChange={() => setPaymentMethod(method as "cash" | "online")}
                 className="accent-green-600"
               />
-              {method === "cash" ? "Cash (Face to Face)" : "Online Payment"}
+              {method === "cash" ? "Cash (Pay at Hotel)" : "Online Payment"}
             </label>
           ))}
         </div>

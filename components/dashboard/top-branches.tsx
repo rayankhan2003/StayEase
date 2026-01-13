@@ -1,31 +1,31 @@
-"use client"
+"use client";
 
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Card, CardContent } from "@/components/ui/card"
-import { Progress } from "@/components/ui/progress"
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Card, CardContent } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 const branches = [
   {
     name: "Downtown Hotel",
-    revenue: 45231,
+    revenue: 45231345,
     occupancy: 92,
   },
   {
     name: "Beachfront Resort",
-    revenue: 38420,
+    revenue: 38420244,
     occupancy: 85,
   },
   {
     name: "Mountain Lodge",
-    revenue: 27840,
+    revenue: 27840544,
     occupancy: 78,
   },
   {
     name: "Business Center",
-    revenue: 21930,
+    revenue: 21930363,
     occupancy: 72,
   },
-]
+];
 
 export function TopBranches() {
   return (
@@ -36,11 +36,15 @@ export function TopBranches() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <Avatar className="h-8 w-8">
-                  <AvatarFallback className="bg-primary/10 text-primary">{branch.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary">
+                    {branch.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="text-sm font-medium">{branch.name}</p>
-                  <p className="text-xs text-muted-foreground">${branch.revenue.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">
+                    PKR {branch.revenue.toLocaleString()}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -54,5 +58,5 @@ export function TopBranches() {
         </Card>
       ))}
     </div>
-  )
+  );
 }

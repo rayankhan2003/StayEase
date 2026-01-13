@@ -3,6 +3,7 @@
 import { useSearchParams, usePathname } from "next/navigation";
 import BookRoomForm from "@/components/booking/book-room-form";
 import { useRoom } from "@/hooks/use-rooms";
+import { RoomImagePreview } from "@/components/dashboard/rooms/room-image-preview";
 
 export default function BookRoomPage() {
   const searchParams = useSearchParams();
@@ -22,11 +23,13 @@ export default function BookRoomPage() {
     return (
       <div className="text-red-400 text-center py-10">Room not found.</div>
     );
+  const images = room.image_urls ?? [];
 
   return (
     <div className="bg-neutral-950">
       <div className="max-w-3xl mx-auto px-6 py-14 text-white min-h-screen">
         <h1 className="text-4xl font-bold mb-10 text-center">Book Your Room</h1>
+        <RoomImagePreview images={images} />
         <BookRoomForm
           room={room}
           roomId={roomId}

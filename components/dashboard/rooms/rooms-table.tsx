@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
@@ -186,7 +185,7 @@ export function RoomsTable({ filterStatus }: { filterStatus?: string }) {
         const price = Number.parseFloat(row.getValue("price"));
         const formatted = new Intl.NumberFormat("en-US", {
           style: "currency",
-          currency: "USD",
+          currency: "PKR",
         }).format(price);
         return <div>{formatted}</div>;
       },
@@ -285,7 +284,7 @@ export function RoomsTable({ filterStatus }: { filterStatus?: string }) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
+
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,

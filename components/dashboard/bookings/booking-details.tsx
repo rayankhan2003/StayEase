@@ -33,7 +33,7 @@ export function BookingDetails({
   const formatCurrency = (amount: number) =>
     new Intl.NumberFormat("en-US", {
       style: "currency",
-      currency: "USD",
+      currency: "PKR",
     }).format(amount);
 
   const guestName = booking.guests?.name || "Unknown Guest";

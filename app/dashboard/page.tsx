@@ -13,9 +13,6 @@ import { OccupancyRate } from "@/components/dashboard/occupancy-rate";
 import { RevenueMetrics } from "@/components/dashboard/revenue-metrics";
 import { TopBranches } from "@/components/dashboard/top-branches";
 import { GuestFeedback } from "@/components/dashboard/guest-feedback";
-import { DebugSupabase } from "@/components/debug-supabase";
-import { getUser } from "@/lib/api/auth";
-import { useEffect } from "react";
 
 export default function DashboardPage() {
   return (
@@ -39,7 +36,7 @@ export default function DashboardPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
+                <div className="text-2xl font-bold">PKR 45,231,132</div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month
                 </p>
@@ -143,9 +140,6 @@ export default function DashboardPage() {
                 <GuestFeedback />
               </CardContent>
             </Card>
-          </div>
-          <div className="mt-8">
-            <DebugSupabase />
           </div>
         </TabsContent>
         <TabsContent value="analytics" className="space-y-4">

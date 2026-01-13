@@ -98,7 +98,7 @@ export function DashboardSidebar({
           className="flex items-center gap-2 font-semibold"
         >
           <Hotel className="h-6 w-6" />
-          <span>HMS</span>
+          <span>Gala Hotel</span>
         </Link>
         <Button
           variant="ghost"

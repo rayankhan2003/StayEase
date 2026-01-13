@@ -88,7 +88,9 @@ export default function LoginPage() {
           <div className="flex justify-center">
             <Hotel className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="text-2xl">Hotel Management System</CardTitle>
+          <CardTitle className="text-2xl">
+            Gala Hotel Management System
+          </CardTitle>
           <CardDescription>
             Enter your credentials to access your account
           </CardDescription>

@@ -7,7 +7,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   type SortingState,
   useReactTable,
@@ -178,7 +177,7 @@ const columns: ColumnDef<Booking>[] = [
       const amount = Number.parseFloat(row.getValue("total_amount"));
       const formatted = new Intl.NumberFormat("en-US", {
         style: "currency",
-        currency: "USD",
+        currency: "PKR",
       }).format(amount);
       return <div>{formatted}</div>;
     },
@@ -291,7 +290,6 @@ export function BookingsTable({ filterStatus }: { filterStatus?: string }) {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onRowSelectionChange: setRowSelection,
