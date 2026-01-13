@@ -77,8 +77,8 @@ export function BookingSearchForm({ defaultValues }: BookingSearchFormProps) {
             <SelectItem value="standard">Standard</SelectItem>
             <SelectItem value="deluxe">Deluxe</SelectItem>
             <SelectItem value="suite">Suite</SelectItem>
-            <SelectItem value="executive">Executive Suite</SelectItem>
-            <SelectItem value="presidential">Presidential Suite</SelectItem>
+            <SelectItem value="executive">Executive</SelectItem>
+            <SelectItem value="family">Family</SelectItem>
           </SelectContent>
         </Select>
       </div>

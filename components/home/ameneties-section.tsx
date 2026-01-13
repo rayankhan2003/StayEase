@@ -3,28 +3,25 @@ import Image from "next/image";
 
 const amenities = [
   {
-    title: "Luxury Spa",
-    desc: "Rejuvenate your body and mind with our premium spa treatments.",
-    image:
-      "https://images.unsplash.com/photo-1571902943202-507ec2618e8f?q=80&w=2075&auto=format&fit=crop",
-  },
-  {
-    title: "Infinity Pool",
-    desc: "Swim in our stunning infinity pool with panoramic city views.",
-    image:
-      "https://images.unsplash.com/photo-1468824357306-a439d58ccb1c?q=80&w=2069&auto=format&fit=crop",
-  },
-  {
-    title: "Fitness Center",
-    desc: "Stay fit with our state-of-the-art equipment and personal trainers.",
-    image:
-      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop",
+    title: "24/7 Room Service",
+    desc: "Order meals and essentials anytime with our reliable room service.",
+    image: "/room-service.jpg",
   },
   {
     title: "Fine Dining",
     desc: "Savor exquisite cuisine prepared by our award-winning chefs.",
     image:
       "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=2070&auto=format&fit=crop",
+  },
+  {
+    title: "Uninterrupted Power Supply",
+    desc: "Enjoy a comfortable stay with full power backup during outages.",
+    image: "/hotel-backup-diesel-generator.jpg",
+  },
+  {
+    title: "Secure Parking",
+    desc: "24/7 secure parking facility with CCTV monitoring for your peace of mind.",
+    image: "/parking.jpg",
   },
 ];
 
